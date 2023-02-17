@@ -1,6 +1,6 @@
 import numpy as np
 
-class MonteCarloDeterministic:
+class MonteCarloStochastic:
     def __init__(self, states_n, actions_n, gamma, epsilon):
         self.states_n = states_n
         self.actions_n = actions_n
@@ -59,6 +59,62 @@ class MonteCarloDeterministic:
                     )
                 else:
                     self.pi[state][action] = self.epsilon / self.actions_n
+
+    def get_action(self, state):
+        return np.random.choice(self.actions_n, p=self.pi[state])
+
+    def get_best_action(self, state):
+        return np.argmax(self.q[state])
+
+    def render(self):
+        print(f"Values: {self.q}\nPolicy: {self.pi}")
+
+class MonteCarloDeterministic:
+    def __init__(self, states_n, actions_n, gamma, epsilon):
+        self.states_n = states_n
+        self.actions_n = actions_n
+        self.gamma = gamma
+        self.epsilon = epsilon
+        self.reset()
+
+    def reset(self):
+        self.episode = []
+        self.q = np.zeros((self.states_n, self.actions_n))
+        self.pi = np.full((self.states_n, self.actions_n), 1 / self.actions_n)
+        self.returns = np.zeros((self.states_n, self.actions_n))
+        self.returns_n = np.zeros((self.states_n, self.actions_n))
+
+    def update(self, state, action, reward, terminated):
+        self.episode.append((state, action, reward))
+        if terminated == True:
+            self._update_q()
+            self._update_pi()
+            self.episode = []
+
+    def _update_q(self):
+        states_actions = []
+        [
+            states_actions.insert(0,(state, action, reward)) #Adding elements as a pile so when it's
+            for state, action, reward in self.episode        #iterated over it's like being iterated
+            if (state, action) not in states_actions         #from end to begining
+        ]
+        G = 0
+        for state, action, reward in states_actions:
+            G = self.gamma*G + reward
+            #Will not check for duplicates as it was done in the states_actions creation
+            
+            self.returns[state][action] += G
+            self.returns_n[state][action] += 1
+            self.q[state][action] = (
+                self.returns[state][action] / self.returns_n[state][action]
+            )
+
+    def _update_pi(self):
+        states = []
+        [states.append(state) for state, _, _ in self.episode if state not in states]
+        for state in states:
+            best_action = np.argmax(self.q[state])
+            self.pi[state] = np.argmax(self.q[state][best_action])
 
     def get_action(self, state):
         return np.random.choice(self.actions_n, p=self.pi[state])

@@ -3,7 +3,6 @@ import time
 import gym_taco_environments
 from agent import MonteCarloDeterministic
 
-
 def train(env, agent, episodes):
     for _ in range(episodes):
         observation, _ = env.reset()
@@ -30,7 +29,7 @@ if __name__ == "__main__":
         env.observation_space.n, env.action_space.n, gamma=0.9, epsilon=0.9
     )
 
-    train(env, agent, episodes=3000000)
+    train(env, agent, episodes=100)
     agent.render()
 
     play(env, agent)
