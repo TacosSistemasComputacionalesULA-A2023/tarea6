@@ -80,7 +80,7 @@ class MonteCarloDeterministic:
     def reset(self):
         self.episode = []
         self.q = np.zeros((self.states_n, self.actions_n))
-        self.pi = np.full((self.states_n, self.actions_n), 1 / self.actions_n)
+        self.pi = np.random.randint(0,self.actions_n,self.states_n)
         self.returns = np.zeros((self.states_n, self.actions_n))
         self.returns_n = np.zeros((self.states_n, self.actions_n))
 
@@ -114,10 +114,10 @@ class MonteCarloDeterministic:
         [states.append(state) for state, _, _ in self.episode if state not in states]
         for state in states:
             best_action = np.argmax(self.q[state])
-            self.pi[state] = np.argmax(self.q[state][best_action])
+            self.pi[state] = best_action
 
     def get_action(self, state):
-        return np.random.choice(self.actions_n, p=self.pi[state])
+        return int(self.pi[state])
 
     def get_best_action(self, state):
         return np.argmax(self.q[state])
