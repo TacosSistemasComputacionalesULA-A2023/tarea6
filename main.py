@@ -1,7 +1,7 @@
 import gym
 import time
 import gym_taco_environments
-from agent import MonteCarloDeterministic
+from agent import MonteCarloDeterministic, MonteCarloStochastic
 
 def train(env, agent, episodes):
     for _ in range(episodes):
@@ -24,12 +24,12 @@ def play(env, agent):
         time.sleep(1)
 
 if __name__ == "__main__":
-    env = gym.make("FrozenMaze-v0", render_mode="human", delay=0.5)
+    env = gym.make("FrozenMaze-v0", render_mode="human", delay=0.05)
     agent = MonteCarloDeterministic(
         env.observation_space.n, env.action_space.n, gamma=0.9, epsilon=0.9
     )
 
-    train(env, agent, episodes=100)
+    train(env, agent, episodes=10)
     agent.render()
 
     play(env, agent)
