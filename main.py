@@ -147,9 +147,9 @@ def run_stochastic_learning_process(arguments: agent_stochastic_arguments):
 if __name__ == "__main__":
     env = gym.make("FrozenMaze-v0", render_mode="ansi", delay=0.0001)
     
-    experiments = 1
+    experiments = 10
 
-    episodes = [10]
+    episodes = [1, 2, 3,, 10, 20, 30]
     methods = ["deterministic", "stochastic"]
 
     deterministic_arguments = []
