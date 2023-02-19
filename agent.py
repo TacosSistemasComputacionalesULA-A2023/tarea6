@@ -67,14 +67,13 @@ class MonteCarloStochastic:
         return np.argmax(self.q[state])
 
     def render(self):
-        print(f"Values: {self.q}\nPolicy: {self.pi}")
+        return self.q, self.pi
 
 class MonteCarloDeterministic:
-    def __init__(self, states_n, actions_n, gamma, epsilon):
+    def __init__(self, states_n, actions_n, gamma):
         self.states_n = states_n
         self.actions_n = actions_n
         self.gamma = gamma
-        self.epsilon = epsilon
         self.reset()
 
     def reset(self):
@@ -123,4 +122,4 @@ class MonteCarloDeterministic:
         return np.argmax(self.q[state])
 
     def render(self):
-        print(f"Values: {self.q}\nPolicy: {self.pi}")
+        return self.q, self.pi
