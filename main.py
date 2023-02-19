@@ -7,21 +7,20 @@ import gym_taco_environments
 from agent import MonteCarloDeterministic, MonteCarloStochastic
 
 deterministic_fieldnames = [
-    "iter_num",
+    "episodes",
+    "experiments",
     "method",
     "gamma",
-    "epsilon",
     "reward",
-    "steps",
 ]
 
 stochastic_fieldnames = [
-    "iter_num",
+    "episodes",
+    "experiments",
     "method",
     "gamma",
     "epsilon",
     "reward",
-    "steps",
 ]
 
 class agent_deterministic_arguments:
@@ -89,16 +88,17 @@ def run_deterministic_learning_process(arguments: agent_deterministic_arguments)
 
     average_values = {
         "reward": 0.0,
-        "steps": arguments.episodes,
+        "episodes": arguments.episodes,
+        "experiments": arguments.experiments,
+        "method": arguments.method,
     }
-
+    reward = 0
     for _ in range(arguments.experiments):
         agent = MonteCarloDeterministic(
             arguments.env.observation_space.n,
             arguments.env.action_space.n,
             arguments.gamma,
         )
-        reward = 0
         reward += train(env, agent, episodes=arguments.episodes)
         #ep_q, ep_pi = agent.render()
         #print('Q', ep_q, 'Pi', ep_pi)
@@ -106,9 +106,7 @@ def run_deterministic_learning_process(arguments: agent_deterministic_arguments)
 
         play(env, agent)
 
-    average_values["reward"] /= arguments.experiments
-    average_values["steps"] /= arguments.experiments
-    average_values["method"] = arguments.method
+    average_values["reward"] = reward / arguments.experiments
     average_values["gamma"] = arguments.gamma
 
     return average_values
@@ -120,9 +118,11 @@ def run_stochastic_learning_process(arguments: agent_stochastic_arguments):
 
     average_values = {
         "reward": 0.0,
-        "steps": arguments.episodes,
+        "episodes": arguments.episodes,
+        "experiments": arguments.experiments,
+        "method": arguments.method,
     }
-
+    reward = 0
     for _ in range(arguments.experiments):
         agent = MonteCarloStochastic(
             arguments.env.observation_space.n,
@@ -130,7 +130,6 @@ def run_stochastic_learning_process(arguments: agent_stochastic_arguments):
             arguments.gamma,
             arguments.epsilon,
         )
-        reward = 0
         reward += train(env, agent, episodes=arguments.episodes)
         #ep_q, ep_pi = agent.render()
         #print('Q', ep_q, 'Pi', ep_pi)
@@ -138,9 +137,7 @@ def run_stochastic_learning_process(arguments: agent_stochastic_arguments):
 
         play(env, agent)
 
-    average_values["reward"] /= arguments.experiments
-    average_values["steps"] /= arguments.experiments
-    average_values["method"] = arguments.method
+    average_values["reward"] = reward / arguments.experiments
     average_values["gamma"] = arguments.gamma
     average_values["epsilon"] = arguments.epsilon
 
@@ -150,9 +147,9 @@ def run_stochastic_learning_process(arguments: agent_stochastic_arguments):
 if __name__ == "__main__":
     env = gym.make("FrozenMaze-v0", render_mode="ansi", delay=0.0001)
     
-    experiments = 100
+    experiments = 1
 
-    episodes = [10, 100, 1000]
+    episodes = [10]
     methods = ["deterministic", "stochastic"]
 
     deterministic_arguments = []
